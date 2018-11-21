@@ -16,6 +16,7 @@ func (c *TopicsCommand) Run(cmdTree, args []string) {
 	fmt.Println(strings.Join(cmdTree, " ") + ` <subcommand>
 
 <subcommand>
+  list
   create
   subscription
   publish`)

@@ -14,9 +14,16 @@ func NewCommand() Command {
 		SubCommand: map[string]Command{
 			"topics": &TopicsCommand{
 				SubCommand: map[string]Command{
+					"list":         &TopicsListCommand{},
 					"create":       &TopicsCreateCommand{},
 					"subscription": &TopicsSubscriptionCommand{},
 					"publish":      &TopicsPublishCommand{},
+				},
+			},
+			"subscriptions": &SubscriptionsCommand{
+				SubCommand: map[string]Command{
+					"list":    &SubscriptionsListCommand{},
+					"consume": &SubscriptionsConsumeCommand{},
 				},
 			},
 		},

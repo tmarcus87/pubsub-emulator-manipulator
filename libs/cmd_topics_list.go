@@ -12,16 +12,16 @@ import (
 	"cloud.google.com/go/pubsub"
 )
 
-type SubscriptionsListCommand struct {
+type TopicsListCommand struct {
 	SubCommand map[string]Command
 }
 
-func (c *SubscriptionsListCommand) GetSubCommands() map[string]Command {
+func (c *TopicsListCommand) GetSubCommands() map[string]Command {
 	return c.SubCommand
 }
 
-func (c *SubscriptionsListCommand) Run(cmdTree, args []string) {
-	fs := flag.NewFlagSet("subscriptions list", flag.ContinueOnError)
+func (c *TopicsListCommand) Run(cmdTree, args []string) {
+	fs := flag.NewFlagSet("topics create", flag.ContinueOnError)
 	fs.SetOutput(ioutil.Discard)
 	pProjectID := fs.String("project", "", "ProjectID")
 	pHelp := fs.Bool("help", false, "Display help")
@@ -41,16 +41,15 @@ func (c *SubscriptionsListCommand) Run(cmdTree, args []string) {
 	if err != nil {
 		panic(err)
 	}
-
-	it := client.Subscriptions(ctx)
+	it := client.Topics(ctx)
 	for {
-		subscription, err := it.Next()
+		topic, err := it.Next()
 		if err != nil {
 			if err == iterator.Done {
 				break
 			}
 			panic(err)
 		}
-		fmt.Printf("* %s (%s)\n", subscription.ID(), subscription.String())
+		fmt.Printf("* %s (%s)\n", topic.ID(), topic.String())
 	}
 }
