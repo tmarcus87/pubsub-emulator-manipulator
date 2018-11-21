@@ -2,6 +2,16 @@
 
 set -e
 
+ENVSET=`cat <<EOF
+windows,386,.exe
+windows,amd64,.exe
+darwin,386,
+darwin,amd64,
+linux,386,
+linux,amd64,
+EOF
+`
+
 create_mock() {
     rm -rf mock
     mkdir mock
@@ -21,7 +31,37 @@ test_app() {
 }
 
 build_app() {
-    go build
+    for ENV in ${ENVSET[@]}; do
+        local OS=`echo "${ENV}" | awk -F',' '{ print $1 }'`
+        local ARCH=`echo "${ENV}" | awk -F',' '{ print $2 }'`
+        local EXT=`echo "${ENV}" | awk -F',' '{ print $3 }'`
+
+        local OUTPUT_NAME="bin/pem-${OS}-${ARCH}${EXT}"
+
+        echo "Build for ${OS}(${ARCH})"
+        GOOS=${OS} GOARCH=${ARCH} \
+            go build \
+                -o ${OUTPUT_NAME} \
+                -tags netgo -installsuffix netgo \
+                --ldflags '-extldflags "-static"'
+
+    done
+
+    # for OS in ${OSES[@]}; do
+    #     for ARCH in ${ARCHS[@]}; do
+    #         OUTPUT="pem-${OS}-${ARCH}"
+    #         if [ "${OS}" = "windows" ]; then
+    #             OUTPUT="bin/${OUTPUT}.exe"
+    #         fi
+
+    #         GOOS=${OS} GOARCH=${ARCH} \
+    #             go build \
+    #                 -o ${OUTPUT} \
+    #                 -tags netgo -installsuffix netgo \
+    #                 --ldflags '-extldflags "-static"'
+
+    #     done
+    # done
 }
 
 case $1 in
